@@ -42,17 +42,17 @@ void afficherBaroAltimetre(int adresseI2C)
       lcd.print("C");*/
       lcd.setCursor(0,1);
       lcd.print("Pa : ");
-      dtostrf(pressionAbsolue, 6, 1, ligne);
+      dtostrf(pressionAbsolue, 6, 0, ligne);
       lcd.print(ligne);
       lcd.print(" hPa");
       lcd.setCursor(0,2);
       lcd.print("Pr : ");
-      dtostrf(pressionRelative, 6, 1, ligne);
+      dtostrf(pressionRelative, 6, 0, ligne);
       lcd.print(ligne);
       lcd.print(" hPa");
       lcd.setCursor(0,3);
       lcd.print("H  : ");
-      dtostrf(altitude, 6, 1, ligne);
+      dtostrf(altitude, 6, 0, ligne);
       lcd.print(ligne);
       lcd.print(" m");
       for (int i=0; i<100; i++) {
