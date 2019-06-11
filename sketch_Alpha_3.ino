@@ -1061,7 +1061,7 @@ void transfererFichier()
         break;  // On sort de la boucle while  
       }
     }
-    // Marqueur de fin de fichier
+    // Marqueur de fin de fichier (pour Python)
     Serial.write("\r\n"); // Retour à la ligne + Saut de ligne
     // Close the file
     dataFile.close();
