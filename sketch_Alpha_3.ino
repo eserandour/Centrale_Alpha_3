@@ -859,6 +859,8 @@ void enregistrerFichier()
             case '*' :
               // Stoppe l'enregistrement
               recording = false;
+              // Marqueur de fin d'enregistrement (pour Python)
+              Serial.write("\r\n"); // Retour à la ligne + Saut de ligne
               selectMenu(TAG_MENU_PRINCIPAL);
               break;
             case '#' :
@@ -974,6 +976,8 @@ void enregistrerFichier()
           if (key == '*') {
             // Stoppe l'enregistrement
             recording = false;
+            // Marqueur de fin d'enregistrement (pour Python)
+            Serial.write("\r\n"); // Retour à la ligne + Saut de ligne
             selectMenu(TAG_MENU_PRINCIPAL);
             break;  // On sort de la boucle do...while  
           }
