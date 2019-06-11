@@ -4,7 +4,7 @@
    Copyright 2013, 2014, 2015, 2016, 2019 - Eric Sérandour
    http://3615.entropie.org
 */
-const String VERSION = "2019.05.25";
+const String VERSION = "2019.06.11";
 /*   
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1057,6 +1057,8 @@ void transfererFichier()
         break;  // On sort de la boucle while  
       }
     }
+    // Marqueur de fin de fichier
+    Serial.write("\r\n"); // Retour à la ligne + Saut de ligne
     // Close the file
     dataFile.close();
     delay(3000); // Le temps que le programme de récupération se ferme
@@ -1071,4 +1073,3 @@ void transfererFichier()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-
