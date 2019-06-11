@@ -49,12 +49,9 @@ serialPort.flushInput()
 
 ########################################################################
 
+# Lecture des données puis écriture dans le fichier CSV
 FICHIER = "données.csv"
 file = open(FICHIER, "wb")  # Ecriture en mode binaire
-
-########################################################################
-
-# Lecture puis écriture des données
 finFichier = False
 while not finFichier:
     ligne = serialPort.readline()
@@ -63,6 +60,7 @@ while not finFichier:
         finFichier = True
     else:
         file.write(ligne)
+file.close();
 
 # Fermeture du port série
 serialPort.close()
