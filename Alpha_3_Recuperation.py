@@ -44,7 +44,7 @@ serialPort.setDTR(False)
 time.sleep(0.1)
 serialPort.setDTR(True)
 
-# On vide le buffer
+# On vide le tampon (buffer)
 serialPort.flushInput()
 
 ########################################################################
