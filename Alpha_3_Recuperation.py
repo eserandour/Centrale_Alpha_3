@@ -111,9 +111,9 @@ print()
 ########################################################################
 
 plt.plot(x,y)
-plt.xlabel("Abscisses")                                                 # A modifier éventuellement
-plt.ylabel("Ordonnées")                                                 # A modifier éventuellement
-plt.title("Titre")                                                      # A modifier éventuellement
+plt.xlabel("Abscisses")                                                 # A modifier
+plt.ylabel("Ordonnées")                                                 # A modifier
+plt.title("Titre")                                                      # A modifier
 plt.savefig("graphique.png")  # Sauvegarde du graphique
 plt.show()
 
