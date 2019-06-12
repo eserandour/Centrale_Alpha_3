@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.11)
+#  Récupération des données brutes (version 2019.06.12)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -29,14 +29,16 @@
 
 import serial
 import time
+import csv
+import matplotlib.pyplot as plt  # Pour faire des graphiques
 
 ########################################################################
 
 # Indiquer le port sélectionné dans le menu Arduino (Outils >  Port) :
 # Sous Linux : /dev/ttyACM suivi d'un numéro (0,1,...)
 # Sous Windows : COM suivi d'un numéro (1,2,...)
-PORT = "/dev/ttyACM0"
-VITESSE = 9600  # Vitesse en bauds
+PORT = "/dev/ttyACM0"                                                   # A modifier éventuellement
+VITESSE = 9600  # Vitesse en bauds                                      # A modifier éventuellement
 serialPort = serial.Serial(port = PORT, baudrate = VITESSE)
 
 # Réinitialisation du microcontrôleur via la broche DTR
@@ -48,6 +50,9 @@ serialPort.setDTR(True)
 serialPort.flushInput()
 
 ########################################################################
+
+print("Données brutes :")
+print()
 
 # Lecture des données puis écriture dans le fichier CSV
 FICHIER = "données.csv"
@@ -64,5 +69,46 @@ file.close();
 
 # Fermeture du port série
 serialPort.close()
+
+print()
+
+########################################################################
+
+def readColCSV(numCol):
+    """Lit une colonne du fichier CSV (la numérotation commence à 0)"""
+    file = open(FICHIER, "r")
+    reader = csv.reader(file, delimiter =";")
+    colonne = []  # Création de la liste "colonne" (vide)
+    for row in reader:  # On balaye toutes les lignes du fichier CSV
+        try:
+            # Remplissage de la liste "colonne" avec des entiers
+            colonne.append(int(row[numCol]))
+        except:
+            pass
+    file.close()
+    return colonne
+
+########################################################################
+
+print("Données extraites :")
+print()
+
+x = readColCSV(0)  # Colonne 0 du fichier CSV                           # A modifier éventuellement
+y = readColCSV(2)  # Colonne 2 du fichier CSV                           # A modifier éventuellement
+
+print("Abscisses :")
+print(x)
+print("Ordonnées :")
+print(y)
+print()
+
+########################################################################
+
+plt.plot(x,y)
+plt.xlabel("Abscisses")                                                 # A modifier éventuellement
+plt.ylabel("Ordonnées")                                                 # A modifier éventuellement
+plt.title("Titre")                                                      # A modifier éventuellement
+plt.savefig("graphique.png")  # Sauvegarde du graphique
+plt.show()
 
 ########################################################################
