@@ -98,7 +98,7 @@ print("Données extraites :")
 print()
 
 x = readColCSV(0)  # Colonne 0 du fichier CSV                           # A modifier éventuellement
-y = readColCSV(2)  # Colonne 2 du fichier CSV                           # A modifier éventuellement
+y = readColCSV(1)  # Colonne 1 du fichier CSV                           # A modifier éventuellement
 
 print("Abscisses :")
 print(x)
