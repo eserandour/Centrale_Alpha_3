@@ -50,6 +50,8 @@ serialPort.setDTR(True)
 serialPort.flushInput()
 
 ########################################################################
+#  RECUPERATION DES DONNEES BRUTES DEPUIS LE PORT SERIE => FICHIER CSV
+########################################################################
 
 print("Données brutes :")
 print()
@@ -72,6 +74,8 @@ serialPort.close()
 
 print()
 
+########################################################################
+#  EXTRACTION DES DONNEES DU FICHIER CSV
 ########################################################################
 
 def readColCSV(numCol):
@@ -102,6 +106,8 @@ print("Ordonnées :")
 print(y)
 print()
 
+########################################################################
+#  AFFICHAGE DU GRAPHIQUE
 ########################################################################
 
 plt.plot(x,y)
