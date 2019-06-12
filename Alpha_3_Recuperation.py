@@ -114,7 +114,7 @@ plt.plot(x,y)
 plt.xlabel("Abscisses")                                                 # A modifier
 plt.ylabel("Ordonnées")                                                 # A modifier
 plt.title("Titre")                                                      # A modifier
-plt.savefig("graphique.png")  # Sauvegarde du graphique
+plt.savefig("graphique.png")  # Sauvegarde du graphique au format PNG
 plt.show()
 
 ########################################################################
