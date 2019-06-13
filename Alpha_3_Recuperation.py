@@ -353,8 +353,8 @@ plt.title("")                                                           # A modi
 plt.xlabel("Temps (s)")                                                 # A modifier éventuellement (Abscisses)
 plt.ylabel("Tension (V)")                                               # A modifier éventuellement (Ordonnées)
 
-plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
-#plt.plot(x,y)          # Les points sont reliés
+#plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
+plt.plot(x,y)          # Les points sont reliés
 plt.plot(xReg,yReg)    # Courbe de régression
 
 plt.grid(True)         # Grille
