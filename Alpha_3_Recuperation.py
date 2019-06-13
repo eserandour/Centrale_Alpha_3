@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.13)
+#  Récupération des données brutes (version 2019.06.14)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -32,7 +32,8 @@ import time
 import csv
 import matplotlib.pyplot as plt  # Pour faire des graphiques
 import numpy
-from scipy.optimize import curve_fit
+import scipy.optimize
+import scipy.fftpack  # Pour récupérer les fréquences de la FFT
 
 ########################################################################
 
@@ -86,7 +87,7 @@ def enregistrementDonnees(nomPort, vitessePort, nomFichier):
 
 
 ########################################################################
-#  FONCTION D'EXTRACTION DES DONNEES (NOMBRES ENTIERS) DEPUIS LE .CSV
+#  FONCTION D'EXTRACTION DES DONNEES (NOMBRES) DEPUIS LE .CSV
 ########################################################################
 
 def readColCSV(nomFichier, numCol):
@@ -96,9 +97,10 @@ def readColCSV(nomFichier, numCol):
     colonne = []  # Création de la liste "colonne" (vide)
     for row in reader:  # On balaye toutes les lignes du fichier CSV
         try:
-            # Remplissage de la liste "colonne" avec des entiers
-            # Pour avoir des réels, remplacer int par float
-            colonne.append(int(row[numCol]))
+            # On remplace les virgules éventuelles par des points 
+            notationPoint = row[numCol].replace(",", ".")
+            # Remplissage de la liste "colonne" avec des réels
+            colonne.append(float(notationPoint))
         except:
             pass
     file.close()
@@ -177,6 +179,7 @@ def trigonometrique(x, a, b, c, d):
 
 
 
+
 ########################################################################
 #  FONCTION DE REGRESSION
 ########################################################################
@@ -184,12 +187,26 @@ def trigonometrique(x, a, b, c, d):
 def regressionFonction(x, y, fonction):
     """Régression d'une fonction"""
     # Régression
-    popt, pcov = curve_fit(fonction, x, y)
-    coefReg = popt
+    if fonction == trigonometrique:
+        # Transformée de Fourier rapide (FFT)
+        FFT = abs(scipy.fft(y)) / (y.size / 2)  # Amplitudes
+        freqs = scipy.fftpack.fftfreq(y.size, x[1]-x[0])  # Fréquences
+        FFT = FFT[0:len(FFT)//2]  # On supprime les fréquences négatives
+        freqs = freqs[0:len(freqs)//2]  # Idem
+        freqPicMax = freqs[numpy.argmax(FFT[1:])+1]  # Exclusion du pic à 0 Hz qui correspond à un d non nul
+        # Valeurs d'initialisation
+        a = numpy.std(y)*2**0.5  # Ecart type * racine carré de 2
+        b = 2 * numpy.pi * freqPicMax
+        c = 0
+        d = numpy.mean(y)  # Moyenne de l'échantillon
+        p0 = numpy.array([a, b, c, d])
+        coefReg, pcov = scipy.optimize.curve_fit(fonction, x, y, p0)
+    else:
+        coefReg, pcov = scipy.optimize.curve_fit(fonction, x, y)
     # Coordonnées de points de la fonction de régression
     NB_POINTS = 1000
     xReg = numpy.linspace(min(x), max(x), NB_POINTS)
-    yReg = fonction(xReg, *popt)
+    yReg = fonction(xReg, *coefReg)
     return numpy.array([coefReg, xReg, yReg])
     
 ########################################################################
@@ -336,8 +353,8 @@ plt.title("")                                                           # A modi
 plt.xlabel("Temps (s)")                                                 # A modifier éventuellement (Abscisses)
 plt.ylabel("Tension (V)")                                               # A modifier éventuellement (Ordonnées)
 
-#plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
-plt.plot(x,y)          # Les points sont reliés
+plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
+#plt.plot(x,y)          # Les points sont reliés
 plt.plot(xReg,yReg)    # Courbe de régression
 
 plt.grid(True)         # Grille
