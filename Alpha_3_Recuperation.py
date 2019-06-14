@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.14c)
+#  Récupération des données brutes (version 2019.06.14d)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -238,13 +238,13 @@ def choixRegression(choix):
 
 
 ########################################################################
-#  FONCTION DE REGRESSION
+#  REGRESSION D'UNE FONCTION
 ########################################################################
 
-def regressionFonction(x, y, fonction):
+def regressionFonction(x, y, regression):
     """Régression d'une fonction"""
     # Régression
-    if fonction == trigonometrique:
+    if regression == trigonometrique:
         # Transformée de Fourier rapide (FFT)
         FFT = abs(scipy.fft(y)) / (y.size / 2)  # Amplitudes
         freqs = scipy.fftpack.fftfreq(y.size, x[1]-x[0])  # Fréquences
@@ -257,20 +257,20 @@ def regressionFonction(x, y, fonction):
         c = 0
         d = numpy.mean(y)  # Moyenne de l'échantillon
         p0 = numpy.array([a, b, c, d])
-        coefReg, pcov = scipy.optimize.curve_fit(fonction, x, y, p0)
+        coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
     else:
-        coefReg, pcov = scipy.optimize.curve_fit(fonction, x, y)
+        coefReg, pcov = scipy.optimize.curve_fit(regression, x, y)
     # Coordonnées de points de la fonction de régression
     NB_POINTS = 1000
     xReg = numpy.linspace(min(x), max(x), NB_POINTS)
-    yReg = fonction(xReg, *coefReg)
+    yReg = regression(xReg, *coefReg)
     return numpy.array([coefReg, xReg, yReg])
     
 ########################################################################
 
-def afficheCoefReg(nbCoef):
+def afficheCoefReg(nbCoef, regression):
     for i in range(nbCoef):
-        print(chr(97+i), " = ", coefReg[i])
+        print(chr(97+i), "=", coefReg[i])
 
 ########################################################################
 
@@ -317,10 +317,11 @@ x, y = extraireDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
 
 # Conversion des données
 # x : Temps en secondes
-temporisation = 1  # en s, min, ou h                                    # A modifier éventuellement
+# Pour une temporisation de 100 ms, choisir 0.1 s
+temporisation = 0.1  # en s, min, ou h                                  # A modifier éventuellement
 x = x * temporisation
 # y : Tension en volts
-y = 5.0 * y / 1023                                                      # A modifier éventuellement
+#y = 5.0 * y / 1023                                                      # A modifier éventuellement
 """afficherDonnees("Données converties :", x, y)"""
 
 ########################################################################
@@ -345,10 +346,35 @@ Choix du type de régression (définies plus haut) :
     8 : trigonometrique : y = a.sin(b.x + c) + d
 """
 choix = 1                                                               # A modifier éventuellement
-
-coefReg, xReg, yReg = regressionFonction(x, y, choixRegression(choix))
-afficheCoefReg(numpy.size(coefReg))
+ 
+regressionChoisie = choixRegression(choix)
+coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
+afficheCoefReg(numpy.size(coefReg), regressionChoisie)
 print("---------------------------------------------------------")
+
+# Calcul de la fréquence pour une régression trigonométrique
+# Attention : La base de temps doit être en secondes !
+if regressionChoisie == trigonometrique:
+    periode = (2 * numpy.pi) / coefReg[1]
+    frequence = coefReg[1] / (2 * numpy.pi)
+    print("Période   =", periode, "s")
+    print("Fréquence =", frequence, "Hz")
+    print("---------------------------------------------------------")
+
+########################################################################
+
+
+
+
+
+
+########################################################################
+#  AUTRES CALCULS
+########################################################################
+
+"""
+Commentaires
+"""
 
 ########################################################################
 
