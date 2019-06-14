@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.14e)
+#  Récupération des données brutes (version 2019.06.14f)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -118,6 +118,13 @@ def extraireDonnees(nomFichier, colX, colY):
 
 ########################################################################
 
+def selectionnerZoneDonnees(x, y, debut, fin):
+    """Sélection d'une zone de données"""
+    x = x[debut:fin]
+    y = y[debut:fin]
+    return numpy.array([x,y])
+
+########################################################################
 
 
 
@@ -315,10 +322,16 @@ COLONNE_Y = 1                                                           # A modi
 x, y = extraireDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
 """afficherDonnees("Données extraites :", x, y)"""
 
+# Sélectionner une zone de données (x, y, ligne début, ligne fin)
+DEBUT = 0
+FIN = numpy.size(x)
+x, y = selectionnerZoneDonnees(x, y, DEBUT, FIN)                        # A modifier éventuellement
+"""afficherDonnees("Données sélectionnées :", x, y)"""
+
 # Conversion des données
 # x : Temps en secondes
 # Pour une temporisation de 100 ms, choisir 0.1 s
-temporisation = 0.1  # en s, min, ou h                                  # A modifier éventuellement
+temporisation = 1  # en s, min, ou h                                    # A modifier éventuellement
 x = x * temporisation
 # y : Tension en volts
 y = 5.0 * y / 1023                                                      # A modifier éventuellement
@@ -387,9 +400,9 @@ Commentaires
 #  AFFICHAGE DU GRAPHIQUE
 ########################################################################
 
-plt.title("")                                                           # A modifier (Titre)
-plt.xlabel("Temps (s)")                                                 # A modifier éventuellement (Abscisses)
-plt.ylabel("Tension (V)")                                               # A modifier éventuellement (Ordonnées)
+plt.title("Titre")                                                      # A modifier (Titre)
+plt.xlabel("Abscisses")                                                 # A modifier (Abscisses)
+plt.ylabel("Ordonnées")                                                 # A modifier (Ordonnées)
 
 #plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
 plt.plot(x,y)          # Les points sont reliés
