@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.14b)
+#  Récupération des données brutes (version 2019.06.14c)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -334,7 +334,7 @@ y = 5.0 * y / 1023                                                      # A modi
 #  ANALYSE DES DONNEES : REGRESSION
 ########################################################################
 """
-Type de régression (définies plus haut) :
+Choix du type de régression (définies plus haut) :
     1 : lineaire : y = a.x + b
     2 : quadratique : y = a.x^2 + b.x + c
     3 : cubique : y = a.x^3 + b.x^2 + c.x + d
@@ -344,9 +344,9 @@ Type de régression (définies plus haut) :
     7 : puissance : y = a.x^b
     8 : trigonometrique : y = a.sin(b.x + c) + d
 """
-regressionChoisie = choixRegression(1)                                  # A modifier éventuellement
+choix = 1                                                               # A modifier éventuellement
 
-coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
+coefReg, xReg, yReg = regressionFonction(x, y, choixRegression(choix))
 afficheCoefReg(numpy.size(coefReg))
 print("---------------------------------------------------------")
 
