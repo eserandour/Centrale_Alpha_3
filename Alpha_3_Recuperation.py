@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.14)
+#  Récupération des données brutes (version 2019.06.14b)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -32,8 +32,8 @@ import time
 import csv
 import matplotlib.pyplot as plt  # Pour faire des graphiques
 import numpy
-import scipy.optimize
-import scipy.fftpack  # Pour récupérer les fréquences de la FFT
+import scipy.optimize  # Routines d'optimisation
+import scipy.fftpack  # Routines de FFT
 
 ########################################################################
 
@@ -46,7 +46,7 @@ import scipy.fftpack  # Pour récupérer les fréquences de la FFT
 #  FONCTION DE RECUPERATION DES DONNEES DU PORT SERIE => FICHIER CSV
 ########################################################################
 
-def enregistrementDonnees(nomPort, vitessePort, nomFichier):
+def enregistrerDonnees(nomPort, vitessePort, nomFichier):
     """Enregistrement des données dans un fichier CSV"""
     # Ouverture du port série
     serialPort = serial.Serial(port = nomPort, baudrate = vitessePort)
@@ -108,13 +108,31 @@ def readColCSV(nomFichier, numCol):
 
 ########################################################################
 
-def extractionDonnees(nomFichier, colX, colY):
+def extraireDonnees(nomFichier, colX, colY):
     """Extraction des données depuis le fichier CSV"""
     listeX = readColCSV(nomFichier, colX)  # Colonne choisie pour x
     listeY = readColCSV(nomFichier, colY)  # Colonne choisie pour y
     x = numpy.array(listeX)    # Liste => Tableau
     y = numpy.array(listeY)    # Liste => Tableau
     return numpy.array([x,y])
+
+########################################################################
+
+
+
+
+
+
+########################################################################
+#  AFFICHAGE DES DONNEES EXTRAITES ET TRAITEES
+########################################################################
+
+def afficherDonnees(message, x, y):
+    """Affichage des données"""
+    print(message)
+    print("Abscisses :", x)
+    print("Ordonnées :", y)
+    print("---------------------------------------------------------")
 
 ########################################################################
 
@@ -181,6 +199,45 @@ def trigonometrique(x, a, b, c, d):
 
 
 ########################################################################
+#  CHOIX DE LA REGRESSION
+########################################################################
+
+def choixRegression(choix):
+    """Choix de la régression"""
+    if choix == 1:
+        regressionChoisie = lineaire
+        print("Régression linéaire : y = a.x + b")
+    elif choix == 2:
+        regressionChoisie = quadratique
+        print("Régression quadratique : y = a.x^2 + b.x + c")
+    elif choix == 3:
+        regressionChoisie = cubique
+        print("Régression cubique : y = a.x^3 + b.x^2 + c.x + d")
+    elif choix == 4:
+        regressionChoisie = quartique
+        print("Régression quartique : y = a.x^4 + b.x^3 + c.x^2 + d.x + e")
+    elif choix == 5:
+        regressionChoisie = exponentielle
+        print("Régression exponentielle : y = a.e^(b.x)")
+    elif choix == 6:
+        regressionChoisie = logarithmique
+        print("Régression logarithmique : y = a.ln(x) + b")
+    elif choix == 7:
+        regressionChoisie = puissance
+        print("Régression puissance : y = a.x^b")
+    elif choix == 8:
+        regressionChoisie = trigonometrique
+        print("Régression trigonométrique : y = a.sin(b.x + c) + d")
+    return regressionChoisie
+
+########################################################################
+
+
+
+
+
+
+########################################################################
 #  FONCTION DE REGRESSION
 ########################################################################
 
@@ -193,7 +250,7 @@ def regressionFonction(x, y, fonction):
         freqs = scipy.fftpack.fftfreq(y.size, x[1]-x[0])  # Fréquences
         FFT = FFT[0:len(FFT)//2]  # On supprime les fréquences négatives
         freqs = freqs[0:len(freqs)//2]  # Idem
-        freqPicMax = freqs[numpy.argmax(FFT[1:])+1]  # Exclusion du pic à 0 Hz qui correspond à un d non nul
+        freqPicMax = freqs[numpy.argmax(FFT[1:])+1]  # 1: et +1 => Exclusion du pic à 0 Hz qui correspond à un d non nul
         # Valeurs d'initialisation
         a = numpy.std(y)*2**0.5  # Ecart type * racine carré de 2
         b = 2 * numpy.pi * freqPicMax
@@ -219,24 +276,6 @@ def afficheCoefReg(nbCoef):
 
 
 
-
-
-
-########################################################################
-#  FONCTION DE CONVERSION DES DONNEES
-########################################################################
-
-def conversionDonnees(x, y):
-    """Traitement des données"""
-    # x : Temps
-    # Pour une temporisation de 100 ms => 0.1 s
-    temporisation = 1  # en s, min, ou h                                # A modifier éventuellement
-    x = x * temporisation
-    # y : Tension en volts
-    y = 5.0 * y / 1023                                                  # A modifier éventuellement
-    return numpy.array([x,y])
-
-########################################################################
 
 
 
@@ -266,25 +305,23 @@ print ()
 # Sous Windows : COM suivi d'un numéro (1,2,...)
 PORT = "/dev/ttyACM0"                                                   # A modifier éventuellement
 VITESSE = 9600  # Vitesse en bauds                                      
-FICHIER_CSV = "données.csv"
-enregistrementDonnees(PORT, VITESSE, FICHIER_CSV)
+FICHIER_CSV = "données.csv"                                             # A modifier éventuellement
+enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)
 print("---------------------------------------------------------")
 
 # Extraction du fichier CSV
 COLONNE_X = 0                                                           # A modifier éventuellement
 COLONNE_Y = 1                                                           # A modifier éventuellement
-x, y = extractionDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
-print("Données extraites :")
-print("Abscisses :", x)
-print("Ordonnées :", y)
-print("---------------------------------------------------------")
+x, y = extraireDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
+"""afficherDonnees("Données extraites :", x, y)"""
 
 # Conversion des données
-x, y = conversionDonnees(x, y)  # Voir un peu plus haut
-print("Données converties :")
-print("Abscisses :", x)
-print("Ordonnées :", y)
-print("---------------------------------------------------------")
+# x : Temps en secondes
+temporisation = 1  # en s, min, ou h                                    # A modifier éventuellement
+x = x * temporisation
+# y : Tension en volts
+y = 5.0 * y / 1023                                                      # A modifier éventuellement
+"""afficherDonnees("Données converties :", x, y)"""
 
 ########################################################################
 
@@ -307,32 +344,7 @@ Type de régression (définies plus haut) :
     7 : puissance : y = a.x^b
     8 : trigonometrique : y = a.sin(b.x + c) + d
 """
-choix = 1                                                               # A modifier éventuellement
-
-if choix == 1:
-    regressionChoisie = lineaire
-    print("Régression linéaire : y = a.x + b")
-elif choix == 2:
-    regressionChoisie = quadratique
-    print("Régression quadratique : y = a.x^2 + b.x + c")
-elif choix == 3:
-    regressionChoisie = cubique
-    print("Régression cubique : y = a.x^3 + b.x^2 + c.x + d")
-elif choix == 4:
-    regressionChoisie = quartique
-    print("Régression quartique : y = a.x^4 + b.x^3 + c.x^2 + d.x + e")
-elif choix == 5:
-    regressionChoisie = exponentielle
-    print("Régression exponentielle : y = a.e^(b.x)")
-elif choix == 6:
-    regressionChoisie = logarithmique
-    print("Régression logarithmique : y = a.ln(x) + b")
-elif choix == 7:
-    regressionChoisie = puissance
-    print("Régression puissance : y = a.x^b")
-elif choix == 8:
-    regressionChoisie = trigonometrique
-    print("Régression trigonométrique : y = a.sin(b.x + c) + d")
+regressionChoisie = choixRegression(1)                                  # A modifier éventuellement
 
 coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
 afficheCoefReg(numpy.size(coefReg))
