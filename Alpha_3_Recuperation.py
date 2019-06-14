@@ -352,7 +352,7 @@ coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
 afficheCoefReg(numpy.size(coefReg), regressionChoisie)
 print("---------------------------------------------------------")
 
-# Calcul de la fréquence pour une régression trigonométrique
+# Calcul de la période et de la fréquence pour une régression trigonométrique
 # Attention : La base de temps doit être en secondes !
 if regressionChoisie == trigonometrique:
     periode = (2 * numpy.pi) / coefReg[1]
