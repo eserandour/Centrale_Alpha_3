@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.14d)
+#  Récupération des données brutes (version 2019.06.14e)
 #
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
@@ -321,7 +321,7 @@ x, y = extraireDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
 temporisation = 0.1  # en s, min, ou h                                  # A modifier éventuellement
 x = x * temporisation
 # y : Tension en volts
-#y = 5.0 * y / 1023                                                      # A modifier éventuellement
+y = 5.0 * y / 1023                                                      # A modifier éventuellement
 """afficherDonnees("Données converties :", x, y)"""
 
 ########################################################################
