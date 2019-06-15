@@ -3,8 +3,9 @@
 ########################################################################
 #
 #  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes (version 2019.06.14f)
-#
+#  Récupération des données brutes
+#  Traitement des données
+#                                         (version 2019.06.15)
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -182,9 +183,9 @@ def quartique(x, a, b, c, d, e):
     # Quartique : y = a.x^4 + b.x^3 + c.x^2 + d.x + e
     return a*x**4 + b*x**3 + c*x**2 + d*x + e
 
-def exponentielle(x, a, b):
-    # Exponentielle : y = a.e^(b.x)
-    return a*numpy.exp(b*x)
+def exponentielle(x, a, b, c):
+    # Exponentielle : y = a.e^(b.x) + c
+    return a*numpy.exp(b*x) + c
 
 def logarithmique(x, a, b):
     # Logarithmique : y = a.ln(x) + b
@@ -225,7 +226,7 @@ def choixRegression(choix):
         print("Régression quartique : y = a.x^4 + b.x^3 + c.x^2 + d.x + e")
     elif choix == 5:
         regressionChoisie = exponentielle
-        print("Régression exponentielle : y = a.e^(b.x)")
+        print("Régression exponentielle : y = a.e^(b.x) + c")
     elif choix == 6:
         regressionChoisie = logarithmique
         print("Régression logarithmique : y = a.ln(x) + b")
@@ -259,7 +260,7 @@ def regressionFonction(x, y, regression):
         freqs = freqs[0:len(freqs)//2]  # Idem
         freqPicMax = freqs[numpy.argmax(FFT[1:])+1]  # 1: et +1 => Exclusion du pic à 0 Hz qui correspond à un d non nul
         # Valeurs d'initialisation
-        a = numpy.std(y)*2**0.5  # Ecart type * racine carré de 2
+        a = numpy.std(y)*2**0.5  # Ecart type de l'échantillon * racine carré de 2
         b = 2 * numpy.pi * freqPicMax
         c = 0
         d = numpy.mean(y)  # Moyenne de l'échantillon
@@ -312,8 +313,8 @@ print ()
 # Sous Windows : COM suivi d'un numéro (1,2,...)
 PORT = "/dev/ttyACM0"                                                   # A modifier éventuellement
 VITESSE = 9600  # Vitesse en bauds                                      
-FICHIER_CSV = "données.csv"                                             # A modifier éventuellement
-enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)
+FICHIER_CSV = "data.csv"                                                # A modifier éventuellement
+enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)                          # A mettre en commentaire si on veut travailler sur un fichier CSV déjà existant
 print("---------------------------------------------------------")
 
 # Extraction du fichier CSV
@@ -353,7 +354,7 @@ Choix du type de régression (définies plus haut) :
     2 : quadratique : y = a.x^2 + b.x + c
     3 : cubique : y = a.x^3 + b.x^2 + c.x + d
     4 : quartique : y = a.x^4 + b.x^3 + c.x^2 + d.x + e
-    5 : exponentielle : y = a.e^(b.x)
+    5 : exponentielle : y = a.e^(b.x) + c
     6 : logarithmique : y = a.ln(x) + b
     7 : puissance : y = a.x^b
     8 : trigonometrique : y = a.sin(b.x + c) + d
