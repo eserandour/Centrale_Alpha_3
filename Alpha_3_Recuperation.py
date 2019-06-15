@@ -2,10 +2,8 @@
 """
 ########################################################################
 #
-#  La Valise / Centrale Alpha 3 :
-#  Récupération des données brutes
-#  Traitement des données
-#                                         (version 2019.06.15)
+#  Centrale Alpha 3 : Récupération et traitement des données brutes
+#  Version 2019.06.15
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -359,7 +357,7 @@ Choix du type de régression (définies plus haut) :
     7 : puissance : y = a.x^b
     8 : trigonometrique : y = a.sin(b.x + c) + d
 """
-choix = 1                                                               # A modifier éventuellement
+choix = 5                                                               # A modifier éventuellement
  
 regressionChoisie = choixRegression(choix)
 coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
