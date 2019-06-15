@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.15
+#  Version 2019.06.15b
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -182,7 +182,7 @@ def quartique(x, a, b, c, d, e):
     return a*x**4 + b*x**3 + c*x**2 + d*x + e
 
 def exponentielle(x, a, b, c):
-    # Exponentielle : y = a.e^(b.x) + c
+    # Exponentielle : y = a.e^(b.x) + c 
     return a*numpy.exp(b*x) + c
 
 def logarithmique(x, a, b):
@@ -250,7 +250,20 @@ def choixRegression(choix):
 def regressionFonction(x, y, regression):
     """Régression d'une fonction"""
     # Régression
-    if regression == trigonometrique:
+    if regression == exponentielle:
+        try:
+            # Valeurs d'initialisation (pour b > 0)
+            a ,b ,c = [1, 1, 1]
+            p0 = numpy.array([a, b, c])
+            # Régression
+            coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
+        except:
+            # Valeurs d'initialisation (pour b < 0)
+            a ,b ,c = [1, -1, 1]
+            p0 = numpy.array([a, b, c])
+            # Régression
+            coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
+    elif regression == trigonometrique:
         # Transformée de Fourier rapide (FFT)
         FFT = abs(scipy.fft(y)) / (y.size / 2)  # Amplitudes
         freqs = scipy.fftpack.fftfreq(y.size, x[1]-x[0])  # Fréquences
@@ -263,6 +276,7 @@ def regressionFonction(x, y, regression):
         c = 0
         d = numpy.mean(y)  # Moyenne de l'échantillon
         p0 = numpy.array([a, b, c, d])
+        # Régression
         coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
     else:
         coefReg, pcov = scipy.optimize.curve_fit(regression, x, y)
@@ -312,7 +326,7 @@ print ()
 PORT = "/dev/ttyACM0"                                                   # A modifier éventuellement
 VITESSE = 9600  # Vitesse en bauds                                      
 FICHIER_CSV = "data.csv"                                                # A modifier éventuellement
-enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)                          # A mettre en commentaire si on veut travailler sur un fichier CSV déjà existant
+#enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)                          # A mettre en commentaire si on veut travailler sur un fichier CSV déjà existant
 print("---------------------------------------------------------")
 
 # Extraction du fichier CSV
@@ -357,7 +371,7 @@ Choix du type de régression (définies plus haut) :
     7 : puissance : y = a.x^b
     8 : trigonometrique : y = a.sin(b.x + c) + d
 """
-choix = 5                                                               # A modifier éventuellement
+choix = 1                                                               # A modifier éventuellement
  
 regressionChoisie = choixRegression(choix)
 coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
