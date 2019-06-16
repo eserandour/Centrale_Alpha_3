@@ -285,8 +285,7 @@ def regressionFonction(x, y, regression):
         # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
         a = 1
         b = 1
-        c = 1
-        p0 = numpy.array([a, b, c])
+        p0 = numpy.array([a, b])
     elif regression == puissance:
         # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
         a = 1
