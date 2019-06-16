@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.15b
+#  Version 2019.06.16a
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -249,37 +249,68 @@ def choixRegression(choix):
 
 def regressionFonction(x, y, regression):
     """Régression d'une fonction"""
-    # Régression
-    if regression == exponentielle:
-        try:
-            # Valeurs d'initialisation (pour b > 0)
-            a ,b ,c = [1, 1, 1]
-            p0 = numpy.array([a, b, c])
-            # Régression
-            coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
-        except:
-            # Valeurs d'initialisation (pour b < 0)
-            a ,b ,c = [1, -1, 1]
-            p0 = numpy.array([a, b, c])
-            # Régression
-            coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
+    if regression == lineaire:
+        # Valeurs d'initialisation pour la régression
+        a = 1
+        b = 1
+        p0 = numpy.array([a, b])
+    elif regression == quadratique:
+        # Valeurs d'initialisation pour la régression
+        a = 1
+        b = 1
+        c = 1
+        p0 = numpy.array([a, b, c])
+    elif regression == cubique:
+        # Valeurs d'initialisation pour la régression
+        a = 1
+        b = 1
+        c = 1
+        d = 1
+        p0 = numpy.array([a, b, c, d])
+    elif regression == quartique:
+        # Valeurs d'initialisation pour la régression
+        a = 1
+        b = 1
+        c = 1
+        d = 1
+        e = 1
+        p0 = numpy.array([a, b, c, d, e])
+    elif regression == exponentielle:
+        # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
+        a = 1
+        b = 1
+        c = 1
+        p0 = numpy.array([a, b, c])
+    elif regression == logarithmique:
+        # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
+        a = 1
+        b = 1
+        c = 1
+        p0 = numpy.array([a, b, c])
+    elif regression == puissance:
+        # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
+        a = 1
+        b = 1
+        p0 = numpy.array([a, b])
     elif regression == trigonometrique:
         # Transformée de Fourier rapide (FFT)
         FFT = abs(scipy.fft(y)) / (y.size / 2)  # Amplitudes
         freqs = scipy.fftpack.fftfreq(y.size, x[1]-x[0])  # Fréquences
-        FFT = FFT[0:len(FFT)//2]  # On supprime les fréquences négatives
-        freqs = freqs[0:len(freqs)//2]  # Idem
+        FFT = FFT[0:len(FFT) // 2]  # On supprime les fréquences négatives
+        freqs = freqs[0:len(freqs) // 2]  # Idem
         freqPicMax = freqs[numpy.argmax(FFT[1:])+1]  # 1: et +1 => Exclusion du pic à 0 Hz qui correspond à un d non nul
-        # Valeurs d'initialisation
+        # Valeurs d'initialisation pour la régression
         a = numpy.std(y)*2**0.5  # Ecart type de l'échantillon * racine carré de 2
         b = 2 * numpy.pi * freqPicMax
         c = 0
         d = numpy.mean(y)  # Moyenne de l'échantillon
         p0 = numpy.array([a, b, c, d])
-        # Régression
+    # Régression
+    try:
         coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
-    else:
-        coefReg, pcov = scipy.optimize.curve_fit(regression, x, y)
+    except:
+        print("Modifiez les valeurs d'initialisation")
+        print("---------------------------------------------------------")
     # Coordonnées de points de la fonction de régression
     NB_POINTS = 1000
     xReg = numpy.linspace(min(x), max(x), NB_POINTS)
@@ -326,7 +357,7 @@ print ()
 PORT = "/dev/ttyACM0"                                                   # A modifier éventuellement
 VITESSE = 9600  # Vitesse en bauds                                      
 FICHIER_CSV = "data.csv"                                                # A modifier éventuellement
-#enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)                          # A mettre en commentaire si on veut travailler sur un fichier CSV déjà existant
+enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)                          # A mettre en commentaire si on veut travailler sur un fichier CSV déjà existant
 print("---------------------------------------------------------")
 
 # Extraction du fichier CSV
@@ -347,7 +378,7 @@ x, y = selectionnerZoneDonnees(x, y, DEBUT, FIN)                        # A modi
 temporisation = 1  # en s, min, ou h                                    # A modifier éventuellement
 x = x * temporisation
 # y : Tension en volts
-y = 5.0 * y / 1023                                                      # A modifier éventuellement
+#y = 5.0 * y / 1023                                                      # A modifier éventuellement
 """afficherDonnees("Données converties :", x, y)"""
 
 ########################################################################
@@ -374,18 +405,20 @@ Choix du type de régression (définies plus haut) :
 choix = 1                                                               # A modifier éventuellement
  
 regressionChoisie = choixRegression(choix)
-coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
-afficheCoefReg(numpy.size(coefReg), regressionChoisie)
-print("---------------------------------------------------------")
-
-# Calcul de la période et de la fréquence pour une régression trigonométrique
-# Attention : La base de temps doit être en secondes !
-if regressionChoisie == trigonometrique:
-    periode = (2 * numpy.pi) / coefReg[1]
-    frequence = coefReg[1] / (2 * numpy.pi)
-    print("Période   =", periode, "s")
-    print("Fréquence =", frequence, "Hz")
+try:
+    coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
+    afficheCoefReg(numpy.size(coefReg), regressionChoisie)
     print("---------------------------------------------------------")
+    # Calcul de la période et de la fréquence pour une régression trigonométrique
+    # Attention : La base de temps doit être en secondes !
+    if regressionChoisie == trigonometrique:
+        periode = (2 * numpy.pi) / coefReg[1]
+        frequence = coefReg[1] / (2 * numpy.pi)
+        print("Période   =", periode, "s")
+        print("Fréquence =", frequence, "Hz")
+        print("---------------------------------------------------------")
+except:
+    pass
 
 ########################################################################
 
@@ -418,10 +451,13 @@ plt.xlabel("Abscisses")                                                 # A modi
 plt.ylabel("Ordonnées")                                                 # A modifier (Ordonnées)
 
 #plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
-plt.plot(x,y)          # Les points sont reliés
-plt.plot(xReg,yReg)    # Courbe de régression
+plt.plot(x,y)  # Les points sont reliés
+try:
+    plt.plot(xReg,yReg)    # Courbe de régression
+except:
+    pass
 
-plt.grid(True)         # Grille
+plt.grid(True)  # Grille
 plt.savefig("graphique.png")  # Sauvegarde du graphique au format PNG
 plt.show()
 
