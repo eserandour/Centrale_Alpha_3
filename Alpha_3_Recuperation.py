@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.16a
+#  Version 2019.06.20
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -129,6 +129,7 @@ def selectionnerZoneDonnees(x, y, debut, fin):
 
 
 
+
 ########################################################################
 #  AFFICHAGE DES DONNEES EXTRAITES ET TRAITEES
 ########################################################################
@@ -138,7 +139,7 @@ def afficherDonnees(message, x, y):
     print(message)
     print("Abscisses :", x)
     print("Ordonnées :", y)
-    print("---------------------------------------------------------")
+    print("-----------------------------------------------------------")
 
 ########################################################################
 
@@ -278,7 +279,7 @@ def regressionFonction(x, y, regression):
     elif regression == exponentielle:
         # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
         a = 1
-        b = 1
+        b = -1
         c = 1
         p0 = numpy.array([a, b, c])
     elif regression == logarithmique:
@@ -306,26 +307,67 @@ def regressionFonction(x, y, regression):
         p0 = numpy.array([a, b, c, d])
     # Régression
     try:
-        coefReg, pcov = scipy.optimize.curve_fit(regression, x, y, p0)
+        """
+        La routine curve_fit peut échouer dans la recherche des paramètres.
+        En cas d’échec, il est possible d’aider curve_fit en modifiant p0
+        qui correspond au point de départ dans la recherche des paramètres.
+        """
+        coefReg, coefCov = scipy.optimize.curve_fit(regression, x, y, p0)
     except:
         print("Modifiez les valeurs d'initialisation")
-        print("---------------------------------------------------------")
+        print("-----------------------------------------------------------")
     # Coordonnées de points de la fonction de régression
     NB_POINTS = 1000
     xReg = numpy.linspace(min(x), max(x), NB_POINTS)
     yReg = regression(xReg, *coefReg)
-    return numpy.array([coefReg, xReg, yReg])
+    return numpy.array([coefReg, coefCov, xReg, yReg])
     
 ########################################################################
 
-def afficheCoefReg(nbCoef, regression):
+def afficheCoefReg(coefReg, coefCov):
+    """Affiche les coefficients de régression"""
+    nbCoef = numpy.size(coefReg)
     for i in range(nbCoef):
         print(chr(97+i), "=", coefReg[i])
+    # coefCov : covariance de coefReg.
+    # Les termes diagonaux de coefCov renvoient les variances.
+    # Pour estimer l'écart type sur les coefficients :
+    print("Ecart type sur les coefficients :")
+    coefErr = numpy.sqrt(numpy.diag(coefCov))
+    for i in range(nbCoef):
+        print("sigma_",chr(97+i), "=", coefErr[i])
+
+########################################################################
+
+def afficheRMSE(x, y, yReg):
+    """Affiche l'erreur quadratique moyenne (RMSE) sur l'ordonnée"""
+    yErr = (y - regressionChoisie(x, *coefReg)) 
+    yRMSE = numpy.sqrt(numpy.sum(yErr**2) / yErr.size)
+    print ("Erreur quadratique moyenne sur l'ordonnée :")
+    print("eqm_y =", yRMSE)
 
 ########################################################################
 
 
 
+
+
+########################################################################
+#  GENERATEUR DE DONNEES (POUR LA MISE AU POINT DU PROGRAMME)
+########################################################################
+
+def generateurDonnees():
+    """Générateur de données"""
+    # Fonction avec du bruit
+    numpy.random.seed(0)
+    x = numpy.linspace(-10, 10, num=100)
+    y = trigonometrique(x , 10, 1, 0, 5) + 0.5*numpy.random.normal(size=100)
+    # Listes données
+    #x = (0,1,2,3,4)
+    #y = (2,4,3,5,8)
+    return numpy.array([x,y])
+
+########################################################################
 
 
 
@@ -357,13 +399,16 @@ PORT = "/dev/ttyACM0"                                                   # A modi
 VITESSE = 9600  # Vitesse en bauds                                      
 FICHIER_CSV = "data.csv"                                                # A modifier éventuellement
 enregistrerDonnees(PORT, VITESSE, FICHIER_CSV)                          # A mettre en commentaire si on veut travailler sur un fichier CSV déjà existant
-print("---------------------------------------------------------")
+print("-----------------------------------------------------------")
 
 # Extraction du fichier CSV
 COLONNE_X = 0                                                           # A modifier éventuellement
 COLONNE_Y = 1                                                           # A modifier éventuellement
 x, y = extraireDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
 """afficherDonnees("Données extraites :", x, y)"""
+
+# Générateur de données (pour la mise au point du programme)
+#x, y = generateurDonnees()
 
 # Sélectionner une zone de données (x, y, ligne début, ligne fin)
 DEBUT = 0
@@ -381,6 +426,8 @@ x = x * temporisation
 """afficherDonnees("Données converties :", x, y)"""
 
 ########################################################################
+
+
 
 
 
@@ -405,9 +452,10 @@ choix = 1                                                               # A modi
  
 regressionChoisie = choixRegression(choix)
 try:
-    coefReg, xReg, yReg = regressionFonction(x, y, regressionChoisie)
-    afficheCoefReg(numpy.size(coefReg), regressionChoisie)
-    print("---------------------------------------------------------")
+    coefReg, coefCov, xReg, yReg = regressionFonction(x, y, regressionChoisie)
+    afficheCoefReg(coefReg, coefCov)
+    afficheRMSE(x, y, yReg)
+    print("-----------------------------------------------------------")
     # Calcul de la période et de la fréquence pour une régression trigonométrique
     # Attention : La base de temps doit être en secondes !
     if regressionChoisie == trigonometrique:
@@ -415,7 +463,7 @@ try:
         frequence = coefReg[1] / (2 * numpy.pi)
         print("Période   =", periode, "s")
         print("Fréquence =", frequence, "Hz")
-        print("---------------------------------------------------------")
+        print("-----------------------------------------------------------")
 except:
     pass
 
@@ -433,6 +481,8 @@ except:
 """
 Commentaires
 """
+
+
 
 ########################################################################
 
@@ -452,7 +502,7 @@ plt.ylabel("Ordonnées")                                                 # A mod
 #plt.plot(x, y, ".r")  # Les points ne sont pas reliés (r : rouge)
 plt.plot(x,y)  # Les points sont reliés
 try:
-    plt.plot(xReg,yReg)    # Courbe de régression
+    plt.plot(xReg,yReg)  # Courbe de régression
 except:
     pass
 
