@@ -342,7 +342,7 @@ def afficheCoefReg(coefReg, coefCov):
 def afficheEcartTypeErreurY(x, y, yReg):
     """Affiche l'écart type de l'erreur sur l'ordonnée"""
     yErreur = (y - regressionChoisie(x, *coefReg))
-    ySigmaErreur = numpy.sqrt(numpy.sum(yErreur**2) / yErreur.size)
+    ySigmaErreur = numpy.std(yErreur)
     print ("Ecart type de l'erreur sur l'ordonnée :")
     print("sigma_y =", ySigmaErreur)
     return ySigmaErreur
