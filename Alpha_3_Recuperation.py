@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.20
+#  Version 2019.06.20b
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -332,19 +332,20 @@ def afficheCoefReg(coefReg, coefCov):
     # coefCov : covariance de coefReg.
     # Les termes diagonaux de coefCov renvoient les variances.
     # Pour estimer l'écart type sur les coefficients :
-    print("Ecart type sur les coefficients :")
+    print("Ecart type de l'erreur sur les coefficients :")
     coefErr = numpy.sqrt(numpy.diag(coefCov))
     for i in range(nbCoef):
-        print("sigma_",chr(97+i), "=", coefErr[i])
+        print("sigma_"+chr(97+i), "=", coefErr[i])
 
 ########################################################################
 
-def afficheRMSE(x, y, yReg):
-    """Affiche l'erreur quadratique moyenne (RMSE) sur l'ordonnée"""
-    yErr = (y - regressionChoisie(x, *coefReg)) 
-    yRMSE = numpy.sqrt(numpy.sum(yErr**2) / yErr.size)
-    print ("Erreur quadratique moyenne sur l'ordonnée :")
-    print("eqm_y =", yRMSE)
+def afficheEcartTypeErreurY(x, y, yReg):
+    """Affiche l'écart type de l'erreur sur l'ordonnée"""
+    yErreur = (y - regressionChoisie(x, *coefReg))
+    ySigmaErreur = numpy.sqrt(numpy.sum(yErreur**2) / yErreur.size)
+    print ("Ecart type de l'erreur sur l'ordonnée :")
+    print("sigma_y =", ySigmaErreur)
+    return ySigmaErreur
 
 ########################################################################
 
@@ -360,8 +361,8 @@ def generateurDonnees():
     """Générateur de données"""
     # Fonction avec du bruit
     numpy.random.seed(0)
-    x = numpy.linspace(-10, 10, num=100)
-    y = trigonometrique(x , 10, 1, 0, 5) + 0.5*numpy.random.normal(size=100)
+    x = numpy.linspace(0, 2, num=100)
+    y = trigonometrique(x , 2.5, 10, 0, 2.5) + 0.125*numpy.random.normal(size=100)
     # Listes données
     #x = (0,1,2,3,4)
     #y = (2,4,3,5,8)
@@ -409,6 +410,7 @@ x, y = extraireDonnees(FICHIER_CSV, COLONNE_X, COLONNE_Y)
 
 # Générateur de données (pour la mise au point du programme)
 #x, y = generateurDonnees()
+"""afficherDonnees("Données générées :", x, y)"""
 
 # Sélectionner une zone de données (x, y, ligne début, ligne fin)
 DEBUT = 0
@@ -454,7 +456,7 @@ regressionChoisie = choixRegression(choix)
 try:
     coefReg, coefCov, xReg, yReg = regressionFonction(x, y, regressionChoisie)
     afficheCoefReg(coefReg, coefCov)
-    afficheRMSE(x, y, yReg)
+    afficheEcartTypeErreurY(x, y, yReg)
     print("-----------------------------------------------------------")
     # Calcul de la période et de la fréquence pour une régression trigonométrique
     # Attention : La base de temps doit être en secondes !
