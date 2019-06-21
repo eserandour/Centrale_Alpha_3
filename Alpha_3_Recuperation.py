@@ -278,7 +278,7 @@ def regressionFonction(x, y, regression):
         p0 = numpy.array([a, b, c, d, e])
     elif regression == exponentielle:
         # On prend 3 points de coordonnées (xk, yk) tels que  x2 - x1 = x3 - x2
-        # qu'on suppose appartenir à y = a.e^(b.x) + c
+        # qu'on suppose solutions de y = a.e^(b.x) + c
         # Après résolution du système (avec quelques changements de variables),
         # on obtient a, b et c mais seul b est vraiment intéressant.
         e = (x.size - 1 ) // 2
