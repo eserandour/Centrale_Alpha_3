@@ -280,7 +280,7 @@ def regressionFonction(x, y, regression):
             b = numpy.log(numpy.abs((y3-y2)/(y2-y1))) / (x2-x1)
         p0 = numpy.array([a, b, c])
     elif regression == logarithmique:
-        if (x[x < 0].size == 0):  # S'il n'existe pas d'éléments négatifs dans le tableau x
+        if (x[x <= 0].size == 0):  # S'il n'existe pas d'éléments négatifs ou nuls dans le tableau x
             # On linéarise
             popt, pcov = scipy.optimize.curve_fit(lineaire, numpy.log(x), y)
             # Valeurs d'initialisation pour la régression
@@ -288,7 +288,7 @@ def regressionFonction(x, y, regression):
             b = popt[1]
         p0 = numpy.array([a, b])
     elif regression == puissance:
-        if (x[x < 0].size == 0) and (y[y < 0].size == 0):  # S'il n'existe pas d'éléments négatifs dans les tableaux x et y
+        if (x[x <= 0].size == 0) and (y[y <= 0].size == 0):  # S'il n'existe pas d'éléments négatifs ou nuls dans les tableaux x et y
             # On linéarise
             popt, pcov = scipy.optimize.curve_fit(lineaire, numpy.log(x), numpy.log(y))
             # Valeurs d'initialisation pour la régression
@@ -317,7 +317,8 @@ def regressionFonction(x, y, regression):
         """
         coefReg, coefCov = scipy.optimize.curve_fit(regression, x, y, p0)
     except:
-        print("Modifiez les valeurs d'initialisation")
+        print("Echec de l'ajustement.")
+        print("Modifiez éventuellemt les valeurs d'initialisation.")
         print("-----------------------------------------------------------")
     # Coordonnées de points de la fonction de régression
     NB_POINTS = 1000
