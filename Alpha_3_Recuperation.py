@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.21a
+#  Version 2019.06.21b
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -290,7 +290,9 @@ def regressionFonction(x, y, regression):
         y3 = y[2*e]
         # Valeurs d'initialisation pour la régression
         a = 1
-        b = numpy.log(numpy.abs((y3-y2)/(y2-y1))) / (x2-x1)
+        b = 1
+        if (y1 != y2) and (y2 != y3):
+            b = numpy.log(numpy.abs((y3-y2)/(y2-y1))) / (x2-x1)
         c = 1
         p0 = numpy.array([a, b, c])
     elif regression == logarithmique:
