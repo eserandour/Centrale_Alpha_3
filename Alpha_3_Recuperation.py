@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.21c
+#  Version 2019.06.21d
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
