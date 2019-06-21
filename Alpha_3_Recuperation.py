@@ -318,7 +318,7 @@ def regressionFonction(x, y, regression):
         coefReg, coefCov = scipy.optimize.curve_fit(regression, x, y, p0)
     except:
         print("Echec de l'ajustement.")
-        print("Modifiez éventuellemt les valeurs d'initialisation.")
+        print("Modifiez éventuellement les valeurs d'initialisation.")
         print("-----------------------------------------------------------")
     # Coordonnées de points de la fonction de régression
     NB_POINTS = 1000
