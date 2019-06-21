@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.21
+#  Version 2019.06.21a
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -277,16 +277,20 @@ def regressionFonction(x, y, regression):
         e = 1
         p0 = numpy.array([a, b, c, d, e])
     elif regression == exponentielle:
+        # On prend 3 points de coordonnées (xk, yk) tels que  x2 - x1 = x3 - x2
+        # qu'on suppose appartenir à y = a.e^(b.x) + c
+        # Après résolution du système (avec quelques changements de variables),
+        # on obtient a, b et c mais seul b est vraiment intéressant.
         e = (x.size - 1 ) // 2
-        x0 = x[0]
-        x1 = x[e]
-        x2 = x[2*e]
-        y0 = y[0]
-        y1 = y[e]
-        y2 = y[2*e]
+        x1 = x[0]
+        x2 = x[e]
+        x3 = x[2*e]
+        y1 = y[0]
+        y2 = y[e]
+        y3 = y[2*e]
         # Valeurs d'initialisation pour la régression
         a = 1
-        b = numpy.log(numpy.abs((y2-y1)/(y1-y0))) / (x1-x0)
+        b = numpy.log(numpy.abs((y3-y2)/(y2-y1))) / (x2-x1)
         c = 1
         p0 = numpy.array([a, b, c])
     elif regression == logarithmique:
