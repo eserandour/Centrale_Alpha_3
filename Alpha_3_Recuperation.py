@@ -3,7 +3,7 @@
 ########################################################################
 #
 #  Centrale Alpha 3 : Récupération et traitement des données brutes
-#  Version 2019.06.21b
+#  Version 2019.06.21c
 #  Copyright 2019 - Eric Sérandour
 #  http://3615.entropie.org
 #
@@ -250,60 +250,50 @@ def choixRegression(choix):
 
 def regressionFonction(x, y, regression):
     """Régression d'une fonction"""
+    a, b, c, d, e = 1, 1, 1, 1, 1
     if regression == lineaire:
         # Valeurs d'initialisation pour la régression
-        a = 1
-        b = 1
         p0 = numpy.array([a, b])
     elif regression == quadratique:
         # Valeurs d'initialisation pour la régression
-        a = 1
-        b = 1
-        c = 1
         p0 = numpy.array([a, b, c])
     elif regression == cubique:
         # Valeurs d'initialisation pour la régression
-        a = 1
-        b = 1
-        c = 1
-        d = 1
         p0 = numpy.array([a, b, c, d])
     elif regression == quartique:
         # Valeurs d'initialisation pour la régression
-        a = 1
-        b = 1
-        c = 1
-        d = 1
-        e = 1
         p0 = numpy.array([a, b, c, d, e])
     elif regression == exponentielle:
         # On prend 3 points de coordonnées (xk, yk) tels que  x2 - x1 = x3 - x2
         # qu'on suppose solutions de y = a.e^(b.x) + c
         # Après résolution du système (avec quelques changements de variables),
         # on obtient a, b et c mais seul b est vraiment intéressant.
-        e = (x.size - 1 ) // 2
+        ecart = (x.size - 1 ) // 2
         x1 = x[0]
-        x2 = x[e]
-        x3 = x[2*e]
+        x2 = x[ecart]
+        x3 = x[2*ecart]
         y1 = y[0]
-        y2 = y[e]
-        y3 = y[2*e]
+        y2 = y[ecart]
+        y3 = y[2*ecart]
         # Valeurs d'initialisation pour la régression
-        a = 1
-        b = 1
         if (y1 != y2) and (y2 != y3):
             b = numpy.log(numpy.abs((y3-y2)/(y2-y1))) / (x2-x1)
-        c = 1
         p0 = numpy.array([a, b, c])
     elif regression == logarithmique:
-        # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
-        a = 1
-        b = 1
+        if (x[x < 0].size == 0):  # S'il n'existe pas d'éléments négatifs dans le tableau x
+            # On linéarise
+            popt, pcov = scipy.optimize.curve_fit(lineaire, numpy.log(x), y)
+            # Valeurs d'initialisation pour la régression
+            a = popt[0]
+            b = popt[1]
         p0 = numpy.array([a, b])
     elif regression == puissance:
-        # Valeurs d'initialisation pour la régression                   # A modifier éventuellement
-        a = 1
-        b = 1
+        if (x[x < 0].size == 0) and (y[y < 0].size == 0):  # S'il n'existe pas d'éléments négatifs dans les tableaux x et y
+            # On linéarise
+            popt, pcov = scipy.optimize.curve_fit(lineaire, numpy.log(x), numpy.log(y))
+            # Valeurs d'initialisation pour la régression
+            a = numpy.exp(popt[1]) 
+            b = popt[0]
         p0 = numpy.array([a, b])
     elif regression == trigonometrique:
         # Transformée de Fourier rapide (FFT)
